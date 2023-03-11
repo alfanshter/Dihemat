@@ -1,4 +1,4 @@
-package com.dihemat.myapplication.ui.profil.toko
+package com.dihemat.myapplication.ui.profil.toko.ui.dashboard
 
 import android.app.ProgressDialog
 import android.content.Intent
@@ -13,9 +13,11 @@ import androidx.databinding.DataBindingUtil
 import com.dihemat.myapplication.R
 import com.dihemat.myapplication.Session.SessionManager
 import com.dihemat.myapplication.Utils.Constant
-import com.dihemat.myapplication.databinding.ActivityRegisterBinding
-import com.dihemat.myapplication.databinding.ActivityRegisterTokoBinding
+import com.dihemat.myapplication.databinding.ActivityBuatTokoBinding
+import com.dihemat.myapplication.databinding.ActivityTambahBarangBinding
 import com.dihemat.myapplication.model.PostResponse
+import com.dihemat.myapplication.ui.profil.toko.BuatTokoActivity
+import com.dihemat.myapplication.ui.profil.toko.HomeTokoActivity
 import com.dihemat.myapplication.webservice.ApiClientBackend
 import com.google.android.material.snackbar.Snackbar
 import com.squareup.picasso.Picasso
@@ -30,23 +32,23 @@ import splitties.toast.toast
 import java.io.ByteArrayOutputStream
 import java.io.File
 
-class RegisterTokoActivity : AppCompatActivity() {
+class TambahBarangActivity : AppCompatActivity() {
     //foto
     var filePath: Uri? = null
     var data: ByteArray? = null
     private val REQUEST_PICK_IMAGE = 1
+
 
     //server
     var api = ApiClientBackend.instance()
 
     //loading
     lateinit var progressdialog: ProgressDialog
-
-    lateinit var binding: ActivityRegisterTokoBinding
     lateinit var sessionManager: SessionManager
+    lateinit var binding : ActivityTambahBarangBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_register_toko)
+        binding = DataBindingUtil.setContentView(this,R.layout.activity_tambah_barang)
         binding.lifecycleOwner = this
 
         sessionManager = SessionManager(this)
@@ -56,41 +58,12 @@ class RegisterTokoActivity : AppCompatActivity() {
             pilihfile()
         }
 
-        binding.btnsignup.setOnClickListener {
-            daftartoko(it)
-        }
-
-    }
-
-    private fun pilihfile() {
-        //Intent to pick image
-        val intent = Intent(Intent.ACTION_PICK)
-        intent.type = "image/*"
-        startActivityForResult(intent, REQUEST_PICK_IMAGE)
-
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode == RESULT_OK) {
-            if (requestCode == REQUEST_PICK_IMAGE) {
-                filePath = data?.data
-                Picasso.get().load(filePath).fit().centerCrop().into(binding.gambarMakanan)
-                convert()
-            }
+        binding.btninsert.setOnClickListener {
+            insertproduk(it)
         }
     }
 
-
-    fun convert() {
-        val bmp = MediaStore.Images.Media.getBitmap(contentResolver, filePath)
-        val baos = ByteArrayOutputStream()
-        bmp.compress(Bitmap.CompressFormat.PNG, 80, baos)
-        data = baos.toByteArray()
-
-    }
-
-    fun daftartoko(view : View){
+    private fun insertproduk(view: View) {
         val f: File = File(cacheDir, "foto")
         f.createNewFile()
         //Convert bitmap
@@ -99,36 +72,32 @@ class RegisterTokoActivity : AppCompatActivity() {
         val reqFile = RequestBody.create("image/*".toMediaTypeOrNull(), data!!)
         val body = MultipartBody.Part.createFormData("foto", f.name, reqFile)
 
-        val namatoko = binding.edtnamatoko.text.toString().trim()
-        val alamat = binding.edtalamat.text.toString().trim()
-        val latitude = binding.edtlatitude.text.toString().trim()
-        val longitude = binding.edtlongitude.text.toString().trim()
+        val namaproduk = binding.edtnamabarang.text.toString().trim()
+        val harga = binding.edtharga.text.toString().trim()
+        val keterangan = binding.edtketerangan.text.toString().trim()
 
-        if (namatoko.isNotEmpty() && alamat.isNotEmpty() && latitude.isNotEmpty() && longitude.isNotEmpty() && data!=null){
+        if (namaproduk.isNotEmpty() && harga.isNotEmpty() && keterangan.isNotEmpty()  && data!=null){
             loading(true)
-            val body_namatoko: RequestBody = RequestBody.create(
+            val body_namaproduk: RequestBody = RequestBody.create(
                 "text/plain".toMediaTypeOrNull(),
-                namatoko
+                namaproduk
             )
-            val body_alamat: RequestBody = RequestBody.create(
+            val body_harga: RequestBody = RequestBody.create(
                 "text/plain".toMediaTypeOrNull(),
-                alamat
+                harga
             )
-            val body_latitude: RequestBody = RequestBody.create(
+            val body_keterangan: RequestBody = RequestBody.create(
                 "text/plain".toMediaTypeOrNull(),
-                latitude
-            )
-            val body_longitude: RequestBody = RequestBody.create(
-                "text/plain".toMediaTypeOrNull(),
-                longitude
+                keterangan
             )
 
-            val body_id: RequestBody = RequestBody.create(
+            val body_userid: RequestBody = RequestBody.create(
                 "text/plain".toMediaTypeOrNull(),
                 sessionManager.getuid().toString()
             )
 
-            api.daftartoko(body,body_namatoko,body_alamat,body_latitude,body_longitude,body_id).enqueue(object : Callback<PostResponse>{
+            api.tambah_produk(body,body_namaproduk,body_harga,body_keterangan,body_userid).enqueue(object :
+                Callback<PostResponse> {
                 override fun onResponse(
                     call: Call<PostResponse>,
                     response: Response<PostResponse>
@@ -137,10 +106,8 @@ class RegisterTokoActivity : AppCompatActivity() {
                         if (response.isSuccessful){
                             if (response.body()!!.status==1){
                                 loading(false)
-                                toast("berhasil daftar toko")
-                                start<HomeTokoActivity> {  }
+                                toast("berhasil menambahkan produk")
                                 finish()
-                                BuatTokoActivity.activity.finish()
 
                             }else{
                                 loading(false)
@@ -170,6 +137,34 @@ class RegisterTokoActivity : AppCompatActivity() {
         }
     }
 
+
+    private fun pilihfile() {
+        //Intent to pick image
+        val intent = Intent(Intent.ACTION_PICK)
+        intent.type = "image/*"
+        startActivityForResult(intent, REQUEST_PICK_IMAGE)
+
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode == RESULT_OK) {
+            if (requestCode == REQUEST_PICK_IMAGE) {
+                filePath = data?.data
+                Picasso.get().load(filePath).fit().centerCrop().into(binding.gambarMakanan)
+                convert()
+            }
+        }
+    }
+
+
+    fun convert() {
+        val bmp = MediaStore.Images.Media.getBitmap(contentResolver, filePath)
+        val baos = ByteArrayOutputStream()
+        bmp.compress(Bitmap.CompressFormat.PNG, 80, baos)
+        data = baos.toByteArray()
+
+    }
 
     fun loading(status: Boolean) {
         if (status) {

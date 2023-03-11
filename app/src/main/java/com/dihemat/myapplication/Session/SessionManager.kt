@@ -78,6 +78,42 @@ class SessionManager(private val context: Context?) {
         return Pref?.getInt(id,0)
     }
 
+    private val is_status_toko = "is_status_toko"
+    fun setis_status_toko(check:Int)
+    {
+        editor?.putInt(is_status_toko,check)
+        editor?.commit()
+    }
+
+    fun getis_status_toko():Int?
+    {
+        return Pref?.getInt(is_status_toko,0)
+    }
+
+    private val namatoko = "namatoko"
+    fun setnamatoko(check:String)
+    {
+        editor?.putString(namatoko,check)
+        editor?.commit()
+    }
+
+    fun getnamatoko():String?
+    {
+        return Pref?.getString(namatoko,"")
+    }
+
+    private val alamat = "alamat"
+    fun setalamat(check:String)
+    {
+        editor?.putString(alamat,check)
+        editor?.commit()
+    }
+
+    fun getalamat():String?
+    {
+        return Pref?.getString(alamat,"")
+    }
+
 
 
 }

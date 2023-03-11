@@ -59,7 +59,14 @@ dependencies {
 
     //circle
     implementation 'de.hdodenhof:circleimageview:3.1.0'
+    //rounded image
+    implementation "com.makeramen:roundedimageview:2.3.0"
 
+    //shimmer
+    implementation 'com.facebook.shimmer:shimmer:0.5.0'
+
+    //location
+    implementation 'com.google.android.gms:play-services-location:21.0.1'
     //show image
     implementation 'com.squareup.picasso:picasso:2.71828'
     //splitties
