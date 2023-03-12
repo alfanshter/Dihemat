@@ -1,6 +1,7 @@
 package com.dihemat.myapplication.webservice
 
 import com.dihemat.myapplication.model.LoginResponse
+import com.dihemat.myapplication.model.PostCartRequest
 import com.dihemat.myapplication.model.PostResponse
 import com.dihemat.myapplication.model.TokoTerdekatResponse
 import com.dihemat.myapplication.model.produktoko.ProdukTokoResponse
@@ -67,10 +68,35 @@ interface ApiServiceBackend {
         @Part("keterangan") keterangan: RequestBody,
         @Part("user_id") user_id: RequestBody   ): Call<PostResponse>
 
+    //Daftar TOko
+    @Multipart
+    @POST("update_produk")
+    fun update_produk(
+        @Part foto: MultipartBody.Part?,
+        @Part("nama_produk") nama_produk: RequestBody,
+        @Part("harga") harga: RequestBody,
+        @Part("keterangan") keterangan: RequestBody,
+        @Part("oldImage") oldImage: RequestBody,
+        @Part("id") id: RequestBody   ): Call<PostResponse>
+
+    //Daftar TOko
+    @Multipart
+    @POST("update_produk")
+    fun update_produk_withoutfoto(
+        @Part("nama_produk") nama_produk: RequestBody,
+        @Part("harga") harga: RequestBody,
+        @Part("keterangan") keterangan: RequestBody,
+        @Part("id") id: RequestBody   ): Call<PostResponse>
+
     //toko terdekat
     @GET("produk_toko")
     fun produk_toko(
         @Query("user_id") user_id :Int
     ): Call<ProdukTokoResponse>
 
+    //cart
+
+    @Headers("Content-Type: application/json")
+    @POST("cart")
+    fun cart(@Body post: PostCartRequest): Call<PostResponse>
 }

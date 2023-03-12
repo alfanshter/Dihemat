@@ -17,6 +17,27 @@
         android:theme="@style/Theme.Dihemat"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".ui.dashboard.DetailCartActivity"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
+            android:name=".ui.dashboard.CartActivity"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
+            android:name=".ui.dashboard.DetailTokoActivity"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
             android:name=".ui.profil.toko.ui.dashboard.DetailBarangTokoActivity"
             android:exported="false">
             <meta-data

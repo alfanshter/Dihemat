@@ -1,8 +1,10 @@
 package com.dihemat.myapplication.ui.dashboard
 
 import android.app.Activity
+import android.content.Intent
 import android.location.Location
 import android.os.Bundle
+import android.os.Handler
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -20,6 +22,7 @@ import com.dihemat.myapplication.databinding.FragmentDashboardBinding
 import com.dihemat.myapplication.databinding.FragmentProfilBinding
 import com.dihemat.myapplication.model.TokoTerdekatModel
 import com.dihemat.myapplication.model.TokoTerdekatResponse
+import com.dihemat.myapplication.ui.profil.toko.ui.dashboard.DetailBarangTokoActivity
 import com.dihemat.myapplication.webservice.ApiClientBackend
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationRequest
@@ -38,6 +41,7 @@ class DashboardFragment : Fragment() {
     val TAG = "dihemat"
     //adapter
     private var mAdapter: TokoViewHolder? = null
+    var shouldStopLoop = false
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -71,70 +75,103 @@ class DashboardFragment : Fragment() {
         (binding.rvtoko.layoutManager as LinearLayoutManager).orientation =
             LinearLayoutManager.VERTICAL
 
-        if (HomeActivity.latitudePosisi != null && HomeActivity.longitudePosisi != null) {
-            api.toko_terdekat( HomeActivity.latitudePosisi!!, HomeActivity.longitudePosisi!!)
-                .enqueue(object : Callback<TokoTerdekatResponse> {
-                    override fun onResponse(
-                        call: Call<TokoTerdekatResponse>,
-                        response: Response<TokoTerdekatResponse>
-                    ) {
-                        try {
-                            if (response.isSuccessful) {
-                                val notesList = mutableListOf<TokoTerdekatModel>()
+        val mHandler = Handler()
+        val runnable: Runnable = object : Runnable {
+            override fun run() {
+                val r = this
 
-                                if (response.body()!!.data!!.isEmpty()) {
-                                    notesList.clear()
-                                    binding.rvtoko.visibility = View.GONE
-                                    binding.shimmertoko.startShimmer()
-                                    binding.shimmertoko.visibility = View.GONE
-                                    binding.txtnodata.visibility = View.VISIBLE
-                                } else {
-                                    binding.shimmertoko.startShimmer()
-                                    binding.txtnodata.visibility = View.GONE
-                                    binding.shimmertoko.visibility = View.GONE
-                                    binding.rvtoko.visibility = View.VISIBLE
-                                    val data = response.body()
+                if (HomeActivity.latitudePosisi != null && HomeActivity.longitudePosisi != null) {
+                    api.toko_terdekat( HomeActivity.latitudePosisi!!, HomeActivity.longitudePosisi!!)
+                        .enqueue(object : Callback<TokoTerdekatResponse> {
+                            override fun onResponse(
+                                call: Call<TokoTerdekatResponse>,
+                                response: Response<TokoTerdekatResponse>
+                            ) {
+                                try {
+                                    if (response.isSuccessful) {
+                                        shouldStopLoop = true
+                                        val notesList = mutableListOf<TokoTerdekatModel>()
 
-                                    for (hasil in data!!.data!!) {
-                                        notesList.add(hasil!!)
-                                        mAdapter =
-                                            TokoViewHolder(
-                                                notesList,
-                                                requireContext().applicationContext
-                                            )
-                                        binding.rvtoko.adapter = mAdapter
-                                        mAdapter!!.setDialog(object : TokoViewHolder.Dialog {
-                                            override fun onClick(position: Int, note: TokoTerdekatModel) {
+                                        if (response.body()!!.data!!.isEmpty()) {
+                                            notesList.clear()
+                                            binding.rvtoko.visibility = View.GONE
+                                            binding.shimmertoko.startShimmer()
+                                            binding.shimmertoko.visibility = View.GONE
+                                            binding.txtnodata.visibility = View.VISIBLE
+                                        } else {
+                                            binding.shimmertoko.startShimmer()
+                                            binding.txtnodata.visibility = View.GONE
+                                            binding.shimmertoko.visibility = View.GONE
+                                            binding.rvtoko.visibility = View.VISIBLE
+                                            val data = response.body()
 
-//                                                val gson = Gson()
-//                                                val noteJson = gson.toJson(note)
-//                                                startActivity<DetailWarungActivity>(
-//                                                    "TokoTerdekatModel" to noteJson
-//                                                )
+                                            for (hasil in data!!.data!!) {
+                                                notesList.add(hasil!!)
+                                                mAdapter =
+                                                    TokoViewHolder(
+                                                        notesList,
+                                                        requireContext().applicationContext
+                                                    )
+                                                binding.rvtoko.adapter = mAdapter
+                                                mAdapter!!.setDialog(object : TokoViewHolder.Dialog {
+                                                    override fun onClick(position: Int, note: TokoTerdekatModel) {
+
+                                                        val gson = Gson()
+                                                        val noteJson = gson.toJson(note)
+
+                                                        val i = Intent(
+                                                            activity!!.baseContext,
+                                                            DetailTokoActivity::class.java
+                                                        )
+                                                        i.putExtra("tokomodel", noteJson)
+                                                        startActivity(i)
+                                                    }
+
+                                                })
+                                                mAdapter!!.notifyDataSetChanged()
                                             }
+                                        }
 
-                                        })
-                                        mAdapter!!.notifyDataSetChanged()
+                                    } else {
+                                        if (!shouldStopLoop) {
+                                            mHandler.postDelayed(r, 1000)
+                                        }
+                                        toast("gagal mendapatkan response")
                                     }
+                                } catch (e: Exception) {
+                                    if (!shouldStopLoop) {
+                                        mHandler.postDelayed(r, 1000)
+                                    }
+
+                                    Log.d(TAG, "onResponse: ${e.message}")
+                                }
+                            }
+
+                            override fun onFailure(call: Call<TokoTerdekatResponse>, t: Throwable) {
+                                if (!shouldStopLoop) {
+                                    mHandler.postDelayed(r, 1000)
                                 }
 
-                            } else {
-                                toast("gagal mendapatkan response")
+                                Log.d(TAG, "onFailure: ${t.message}")
                             }
-                        } catch (e: Exception) {
-                            Log.d(TAG, "onResponse: ${e.message}")
-                        }
+
+                        })
+
+
+                }else{
+                    if (!shouldStopLoop) {
+                        mHandler.postDelayed(r, 1000)
                     }
 
-                    override fun onFailure(call: Call<TokoTerdekatResponse>, t: Throwable) {
-                        Log.d(TAG, "onFailure: ${t.message}")
-                    }
-
-                })
+                }
 
 
+
+
+            }
         }
 
+        runnable.run()
 
     }
 }
