@@ -7,7 +7,7 @@
 
     <item
         android:id="@+id/navigation_pesanan_toko"
-        android:icon="@drawable/ic_home_black_24dp"
+        android:icon="@drawable/ic_baseline_shopping_cart_24"
         android:title="@string/title_pesanan" />
 
 

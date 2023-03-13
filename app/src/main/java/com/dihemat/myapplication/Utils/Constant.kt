@@ -16,8 +16,8 @@ import java.util.*
 
 object Constant {
 
-    val ip_backend = "http://192.168.1.12:8000/api/"
-    val STORAGE = "http://192.168.1.12:8000/storage/"
+    val ip_backend = "http://192.168.1.3:8000/api/"
+    val STORAGE = "http://192.168.1.3:8000/storage/"
     //Loading
     val tunggu = "Tunggu Sebentar ...."
 

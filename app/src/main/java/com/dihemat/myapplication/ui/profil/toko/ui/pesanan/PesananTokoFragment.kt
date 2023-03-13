@@ -1,25 +1,22 @@
-package com.dihemat.myapplication.ui.pesanan
+package com.dihemat.myapplication.ui.profil.toko.ui.pesanan
 
 import android.content.Intent
 import android.os.Bundle
-import android.os.Handler
 import android.util.Log
+import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.databinding.DataBindingUtil
-import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.dihemat.myapplication.HomeActivity
 import com.dihemat.myapplication.R
 import com.dihemat.myapplication.Session.SessionManager
 import com.dihemat.myapplication.adapter.PesananViewHolder
 import com.dihemat.myapplication.databinding.FragmentPesananBinding
+import com.dihemat.myapplication.databinding.FragmentPesananTokoBinding
 import com.dihemat.myapplication.model.pesan.PesananModel
 import com.dihemat.myapplication.model.pesan.PesananResponse
-import com.dihemat.myapplication.ui.dashboard.DetailTokoActivity
+import com.dihemat.myapplication.ui.pesanan.DetailPesananActivity
 import com.dihemat.myapplication.webservice.ApiClientBackend
 import com.google.gson.Gson
 import retrofit2.Call
@@ -27,9 +24,8 @@ import retrofit2.Callback
 import retrofit2.Response
 import splitties.toast.toast
 
-class PesananFragment : Fragment() {
-
-    lateinit var binding: FragmentPesananBinding
+class PesananTokoFragment : Fragment() {
+    lateinit var binding: FragmentPesananTokoBinding
 
     var api = ApiClientBackend.instance()
 
@@ -39,16 +35,16 @@ class PesananFragment : Fragment() {
     lateinit var sessionManager: SessionManager
     private var mAdapter: PesananViewHolder? = null
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
+        inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View {
-
-        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_pesanan, container, false)
+    ): View? {
+        // Inflate the layout for this fragment
+        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_pesanan_toko, container, false)
         binding.lifecycleOwner = this
-        sessionManager = SessionManager(requireContext().applicationContext)
-        return binding.root
 
+        sessionManager = SessionManager(requireContext().applicationContext)
+
+        return  binding.root
     }
 
     override fun onStart() {
@@ -65,7 +61,7 @@ class PesananFragment : Fragment() {
         (binding.rvpesanan.layoutManager as LinearLayoutManager).orientation =
             LinearLayoutManager.VERTICAL
 
-        api.getpesanan(sessionManager.getuid()!!)
+        api.getpesanan_toko(sessionManager.getuid()!!)
             .enqueue(object : Callback<PesananResponse> {
                 override fun onResponse(
                     call: Call<PesananResponse>,
@@ -107,7 +103,7 @@ class PesananFragment : Fragment() {
 
                                             val i = Intent(
                                                 activity!!.baseContext,
-                                                DetailPesananActivity::class.java
+                                                DetailPesananTokoActivity::class.java
                                             )
                                             i.putExtra("pesananmodel", noteJson)
                                             startActivity(i)
@@ -135,4 +131,5 @@ class PesananFragment : Fragment() {
 
 
     }
+
 }

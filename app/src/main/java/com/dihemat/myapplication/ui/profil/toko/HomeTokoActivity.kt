@@ -7,7 +7,7 @@ import androidx.fragment.app.Fragment
 import com.dihemat.myapplication.R
 import com.dihemat.myapplication.model.TokoTerdekatModel
 import com.dihemat.myapplication.ui.profil.toko.ui.dashboard.DashboardTokoFragment
-import com.dihemat.myapplication.ui.profil.toko.ui.PesananTokoFragment
+import com.dihemat.myapplication.ui.profil.toko.ui.pesanan.PesananTokoFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.gson.Gson
 

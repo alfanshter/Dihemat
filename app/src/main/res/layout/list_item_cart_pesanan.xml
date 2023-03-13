@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_marginTop="10sp"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/black"
+        android:text="0x"
+        android:id="@+id/txtjumlah"
+        android:fontFamily="@font/inter"
+        android:textSize="17sp"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/black"
+        android:layout_marginLeft="3sp"
+        android:text="Nama Produk"
+        android:layout_toLeftOf="@id/txtharga"
+        android:layout_marginRight="10sp"
+        android:layout_toRightOf="@id/txtjumlah"
+        android:id="@+id/txtnama"
+        android:fontFamily="@font/inter"
+        android:textSize="17sp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/gray"
+        android:layout_marginLeft="3sp"
+        android:text="Rp. 0 "
+        android:id="@+id/txtharga"
+        android:layout_alignParentEnd="true"
+        android:fontFamily="@font/inter"
+        android:textSize="17sp"/>
+</RelativeLayout>
